@@ -24,8 +24,8 @@ export default function OrgAssessmentWizard({ token, onComplete }) {
       
       {step === 1 && (
         <div>
-          <input placeholder="Title" onChange={e => setFormData({...formData, title: e.target.value})} />
-          <select onChange={e => setFormData({...formData, difficulty: e.target.value})}>
+          <input placeholder="Title" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} />
+          <select value={formData.difficulty} onChange={e => setFormData({...formData, difficulty: e.target.value})}>
             <option>Easy</option><option>Medium</option><option>Hard</option>
           </select>
         </div>
