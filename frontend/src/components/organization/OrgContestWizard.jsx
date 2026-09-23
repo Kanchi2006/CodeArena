@@ -23,7 +23,7 @@ export default function OrgContestWizard({ token, onComplete }) {
       {step === 1 && (
         <div>
           <input placeholder="Title" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} />
-          <input type="datetime-local" onChange={e => setFormData({...formData, start_time: e.target.value})} />
+          <input type="datetime-local" value={formData.start_time} onChange={e => setFormData({...formData, start_time: e.target.value})} />
         </div>
       )}
 

@@ -3,7 +3,7 @@ import React from 'react';
 export default function OrgContestRulesView({ contest }) {
   return (
     <div style={{ padding: '24px', background: 'var(--bg-panel-solid)', borderRadius: '12px' }}>
-      <h2>{contest?.title} - Rules & Instructions</h2>
+      <h2>{contest?.title || 'Contest'} - Rules & Instructions</h2>
       <section>
         <h4>General Rules</h4>
         <p>{contest?.rules?.general || 'Standard contest rules apply.'}</p>
