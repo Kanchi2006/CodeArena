@@ -24,6 +24,13 @@ export default function OrgContestWizard({ token, onComplete }) {
         <div>
           <input placeholder="Title" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} />
           <input type="datetime-local" value={formData.start_time} onChange={e => setFormData({...formData, start_time: e.target.value})} />
+          <input type="datetime-local" value={formData.end_time} onChange={e => setFormData({...formData, end_time: e.target.value})} />
+          <input type="number" placeholder="Duration (minutes)" value={formData.duration} onChange={e => setFormData({...formData, duration: parseInt(e.target.value)})} />
+          <select value={formData.visibility} onChange={e => setFormData({...formData, visibility: e.target.value})}>
+            <option value="PUBLIC">Public</option>
+            <option value="PRIVATE">Private</option>
+          </select>
+          <input type="number" placeholder="Max Participants (0 for unlimited)" value={formData.max_participants} onChange={e => setFormData({...formData, max_participants: parseInt(e.target.value)})} />
         </div>
       )}
 
