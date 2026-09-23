@@ -1,33 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter } from 'lucide-react';
 
 export default function OrgParticipantsView({ token }) {
   const [participants, setParticipants] = useState([]);
-  const [search, setSearch] = useState('');
 
   useEffect(() => {
-    fetch(`/api/org/participants?search=${search}`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
-    .then(res => res.json())
-    .then(data => setParticipants(data))
-    .catch(err => console.error('Error fetching participants:', err));
-  }, [token, search]);
+    fetch('/api/org/participants', { headers: { 'Authorization': `Bearer ${token}` } })
+      .then(res => res.json())
+      .then(data => setParticipants(data));
+  }, [token]);
 
   return (
-    <div style={{ padding: '24px', background: 'var(--bg-panel-solid)', borderRadius: '12px' }}>
+    <div className="card">
       <h3>Participants</h3>
-      <input 
-        placeholder="Search by name or email..." 
-        value={search} 
-        onChange={e => setSearch(e.target.value)}
-        style={{ padding: '8px', marginBottom: '15px', width: '100%' }}
-      />
-      <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      <table className="data-table">
         <thead>
-          <tr style={{ borderBottom: '1px solid var(--border-light)' }}>
-            <th>Name</th><th>Email</th><th>Event</th><th>Score</th>
-          </tr>
+          <tr><th>Name</th><th>Email</th><th>Event</th><th>Score</th></tr>
         </thead>
         <tbody>
           {participants.map(p => (

@@ -1,26 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { 
   LayoutDashboard, Trophy, Settings, LogOut, User, FileText, BarChart2, 
   FolderOpen, HelpCircle, Menu, Mail, Award, Users, Building2, Plus
 } from 'lucide-react';
 
 export default function OrganizationPortalLayout({ 
-  user, token, currentPage, setCurrentPage, handleLogout, children 
+  user, currentPage, setCurrentPage, handleLogout, children 
 }) {
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-
   const handleNavClick = (page) => {
     setCurrentPage(page);
   };
 
   return (
-    <div className="app-container" style={{ display: 'flex' }}>
-      <aside style={{ width: isSidebarCollapsed ? '60px' : '260px', borderRight: '1px solid var(--border-light)', height: '100vh' }}>
-        <div style={{ padding: '16px' }}>
-          <Building2 size={26} />
-          {!isSidebarCollapsed && <span>Organization</span>}
+    <div className="app-container">
+      <aside className="sidebar">
+        <div className="sidebar-logo">
+          <Building2 size={24} />
+          <span>Organization</span>
         </div>
-        <nav>
+        <nav className="sidebar-nav">
           {[
             { id: 'org-dashboard', label: 'Dashboard', icon: LayoutDashboard },
             { id: 'org-profile', label: 'Profile', icon: User },
@@ -33,14 +31,24 @@ export default function OrganizationPortalLayout({
             { id: 'org-notifications', label: 'Notifications', icon: Mail },
             { id: 'org-settings', label: 'Settings', icon: Settings }
           ].map(item => (
-            <div key={item.id} onClick={() => handleNavClick(item.id)} style={{ padding: '10px', cursor: 'pointer' }}>
-              <item.icon size={18} /> {!isSidebarCollapsed && item.label}
+            <div key={item.id} className={`nav-link ${currentPage === item.id ? 'active' : ''}`} onClick={() => handleNavClick(item.id)}>
+              <item.icon className="nav-link-icon" />
+              <span>{item.label}</span>
             </div>
           ))}
+          <div className="nav-link logout-nav-link" onClick={handleLogout}>
+            <LogOut className="nav-link-icon" />
+            <span>Logout</span>
+          </div>
         </nav>
       </aside>
-      <main style={{ flex: 1, padding: '20px' }}>
-        {children}
+      <main className="main-content">
+        <header className="app-top-navbar">
+          <div className="navbar-brand">Organization Portal</div>
+        </header>
+        <div className="main-content-wrapper">
+          {children}
+        </div>
       </main>
     </div>
   );
