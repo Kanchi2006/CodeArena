@@ -1,0 +1,64 @@
+[
+  {
+    "id": 1,
+    "title": "Two Sum",
+    "slug": "two-sum",
+    "difficulty": "Easy",
+    "category": "Arrays & Hashing",
+    "description": "Given an array of integers `nums` and an integer `target`, return indices of the two numbers such that they add up to `target`.\n\nYou may assume that each input would have **exactly one solution**, and you may not use the same element twice.\n\nYou can return the answer in any order.",
+    "constraints": "2 <= nums.length <= 10^4\n-10^9 <= nums[i] <= 10^9\n-10^9 <= target <= 10^9\nOnly one valid answer exists.",
+    "input_format": "First line: Space-separated integers representing array nums\nSecond line: An integer target",
+    "output_format": "Space-separated 0-indexed integer indices",
+    "sample_input": "2 7 11 15\n9",
+    "sample_output": "0 1",
+    "test_cases": [
+      { "input": "2 7 11 15\n9", "expected": "0 1" },
+      { "input": "3 2 4\n6", "expected": "1 2" },
+      { "input": "3 3\n6", "expected": "0 1" },
+      { "input": "1 5 3 7\n12", "expected": "1 3" },
+      { "input": "-1 -3 4 2\n1", "expected": "1 2" },
+      { "input": "0 4 3 0\n0", "expected": "0 3" },
+      { "input": "10 20 30 40 50\n90", "expected": "3 4" },
+      { "input": "-5 10 25 -10\n15", "expected": "2 3" },
+      { "input": "100 200 500\n700", "expected": "1 2" },
+      { "input": "1 2 3 4 5\n9", "expected": "3 4" }
+    ],
+    "starter_code": {
+      "javascript": "/**\n * @param {number[]} nums\n * @param {number} target\n * @return {number[]}\n */\nfunction twoSum(nums, target) {\n    // Write your code here\n}",
+      "python": "class Solution:\n    def twoSum(self, nums: List[int], target: int) -> List[int]:\n        # Write your code here\n        pass",
+      "cpp": "class Solution {\npublic:\n    vector<int> twoSum(vector<int>& nums, int target) {\n        // Write your code here\n        return {};\n    }\n};",
+      "java": "class Solution {\n    public int[] twoSum(int[] nums, int target) {\n        // Write your code here\n        return new int[]{};\n    }\n}"
+    }
+  },
+  {
+    "id": 2,
+    "title": "Reverse String",
+    "slug": "reverse-string",
+    "difficulty": "Easy",
+    "category": "Strings",
+    "description": "Write a function that reverses a string. The input string is given as an array of characters `s`.\n\nYou must do this by modifying the input array in-place with O(1) extra memory.",
+    "constraints": "1 <= s.length <= 10^5\ns[i] is a printable ascii character",
+    "input_format": "A single line containing the string s",
+    "output_format": "The reversed string",
+    "sample_input": "hello",
+    "sample_output": "olleh",
+    "test_cases": [
+      { "input": "hello", "expected": "olleh" },
+      { "input": "Hannah", "expected": "hannaH" },
+      { "input": "CodeArena", "expected": "anerAedoC" },
+      { "input": "a", "expected": "a" },
+      { "input": "ab", "expected": "ba" },
+      { "input": "racecar", "expected": "racecar" },
+      { "input": "12345", "expected": "54321" },
+      { "input": "OpenAI", "expected": "IAnepO" },
+      { "input": "FullStack", "expected": "kcatSlluF" },
+      { "input": "Algorithms", "expected": "smhtiroglA" }
+    ],
+    "starter_code": {
+      "javascript": "function reverseString(s) {\n    // Write your code here\n}",
+      "python": "class Solution:\n    def reverseString(self, s: List[str]) -> None:\n        # Write your code here\n        pass",
+      "cpp": "class Solution {\npublic:\n    void reverseString(vector<char>& s) {\n        // Write your code here\n    }\n};",
+      "java": "class Solution {\n    public void reverseString(char[] s) {\n        // Write your code here\n    }\n}"
+    }
+  }
+]
