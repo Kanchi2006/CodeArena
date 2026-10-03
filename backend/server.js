@@ -417,8 +417,7 @@ app.post('/api/auth/login', async (req, res) => {
       return res.status(403).json({ error: 'Access denied: This account has been blocked by an administrator.' });
     }
 
-    await db.query('UPDATE users SET activity_status = "online" WHERE id = ?', [user.id]);
-
+await db.query("UPDATE users SET activity_status = 'online' WHERE id = ?", [user.id]);
     let orgStatus = null;
     let orgProfile = null;
     if (user.role === 'organization') {
@@ -466,8 +465,7 @@ app.post('/api/auth/logout', async (req, res) => {
     if (token && token !== 'undefined' && token !== 'null') {
       jwt.verify(token, JWT_SECRET, async (err, decoded) => {
         if (!err && decoded && decoded.id) {
-          await db.query('UPDATE users SET activity_status = "offline" WHERE id = ?', [decoded.id]);
-        }
+await db.query("UPDATE users SET activity_status = 'offline' WHERE id = ?", [decoded.id]);        }
       });
     }
     res.json({ message: 'Logged out successfully' });
@@ -919,7 +917,7 @@ async function findOrCreateOAuthUser({ provider, providerId, email, displayName,
   if (byProvider.length > 0) {
     // Update activity and avatar
     await db.query(
-      'UPDATE users SET activity_status = "online", avatar_url = ? WHERE id = ?',
+      "UPDATE users SET activity_status = 'online', avatar_url = ? WHERE id = ?",
       [avatarUrl || null, byProvider[0].id]
     );
     return { userId: byProvider[0].id, isNew: false };
@@ -934,15 +932,13 @@ async function findOrCreateOAuthUser({ provider, providerId, email, displayName,
       if (existingUser.auth_provider === 'local' || existingUser.auth_provider === provider) {
         // Safe to link: local account or same provider
         await db.query(
-          'UPDATE users SET auth_provider = ?, provider_id = ?, avatar_url = ?, activity_status = "online" WHERE id = ?',
-          [provider, String(providerId), avatarUrl || null, existingUser.id]
+        "UPDATE users SET auth_provider = ?, provider_id = ?, avatar_url = ?, activity_status = 'online' WHERE id = ?",          [provider, String(providerId), avatarUrl || null, existingUser.id]
         );
         return { userId: existingUser.id, isNew: false };
       } else {
         // Email is already linked to a different OAuth provider - return the user but don't overwrite provider
         await db.query(
-          'UPDATE users SET activity_status = "online" WHERE id = ?',
-          [existingUser.id]
+        "UPDATE users SET activity_status = 'online' WHERE id = ?",          [existingUser.id]
         );
         return { userId: existingUser.id, isNew: false };
       }
@@ -3699,8 +3695,7 @@ app.put('/api/admin/users/:id/block', authenticateToken, authorizeAdmin, async (
 
     // Also disconnect their online session if they are blocked
     if (is_blocked) {
-      await db.query('UPDATE users SET activity_status = "offline" WHERE id = ?', [userIdToUpdate]);
-    }
+    await db.query("UPDATE users SET activity_status = 'offline' WHERE id = ?", [userIdToUpdate]);    }
 
     res.json({ message: `User successfully ${is_blocked ? 'blocked' : 'unblocked'}.` });
   } catch (error) {
