@@ -2,6 +2,11 @@
 
 A responsive, high-fidelity full-stack web application designed for coding practice, challenge assessment, and performance tracking. Built using a modern **React (Vite) frontend** and a lightweight **Node.js/Express + MySQL backend**.
 
+## 🚀 Live Demo
+
+👉 **[Open CodeArena](https://codearena-p5v2.onrender.com)**
+
+Test the deployed application and explore the available coding, assessment, contest, course and certificate features.
 ---
 
 ## Technical Stack
