@@ -6,32 +6,34 @@ require('dotenv').config();
 
 const { DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME } = process.env;
 
+const SHOULD_SEED_DEMO_DATA = process.env.SEED_DEMO_DATA === 'true';
+
 let pool;
 
 async function initDB() {
   try {
-    // 1. First connect without specifying database to ensure it exists
-    const tempConnection = await mysql.createConnection({
-      host: DB_HOST || 'mysql_db',
-      port: DB_PORT || 3306,
-      user: DB_USER || 'root',
-      password: DB_PASSWORD || '',
-      multipleStatements: true
-    });
+    const requiredEnv = [
+      'DB_HOST',
+      'DB_USER',
+      'DB_PASSWORD',
+      'DB_NAME'
+    ];
 
-    console.log('Successfully connected to MySQL database engine.');
-    
-    // Create database if not exists
-    await tempConnection.query(`CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\`;`);
-    await tempConnection.end();
-    console.log(`Verified/Created database "${DB_NAME}".`);
+    const missingEnv = requiredEnv.filter(
+      key => !process.env[key]
+    );
 
-    // 2. Initialize connection pool with database name
+    if (missingEnv.length > 0) {
+      throw new Error(
+        `Missing required database environment variables: ${missingEnv.join(', ')}`
+      );
+    }
+
     pool = mysql.createPool({
-      host: DB_HOST || 'mysql_db',
-      port: DB_PORT || 3306,
-      user: DB_USER || 'root',
-      password: DB_PASSWORD || 'rootpassword',
+      host: DB_HOST,
+      port: Number(DB_PORT || 3306),
+      user: DB_USER,
+      password: DB_PASSWORD,
       database: DB_NAME,
       waitForConnections: true,
       connectionLimit: 10,
@@ -39,21 +41,36 @@ async function initDB() {
       multipleStatements: true
     });
 
-    // 3. Check if tables exist. If not, seed them from schema.sql
-    const [tables] = await pool.query("SHOW TABLES;");
+    const connection = await pool.getConnection();
+
+    try {
+      await connection.query('SELECT 1');
+      console.log('Successfully connected to MySQL database.');
+    } finally {
+      connection.release();
+    }
+
+    // Check if core tables exist.
+    const [tables] = await pool.query('SHOW TABLES;');
     const tableList = tables.map(row => Object.values(row)[0]);
 
-    if (!tableList.includes('users') || !tableList.includes('problems') || !tableList.includes('submissions')) {
-      console.log('Tables are missing. Initializing database schema from schema.sql...');
+    if (
+      !tableList.includes('users') ||
+      !tableList.includes('problems') ||
+      !tableList.includes('submissions')
+    ) {
+      console.log(
+        'Core tables are missing. Initializing database schema from schema.sql...'
+      );
+
       const schemaPath = path.join(__dirname, 'schema.sql');
+
       if (fs.existsSync(schemaPath)) {
         const schemaSql = fs.readFileSync(schemaPath, 'utf8');
-        
-        // Execute schema.sql (multipleStatements is enabled)
         await pool.query(schemaSql);
-        console.log('Database tables successfully initialized from schema.sql.');
+        console.log('Database schema initialized successfully.');
       } else {
-        console.warn('schema.sql not found! Cannot initialize tables automatically.');
+        throw new Error('schema.sql not found.');
       }
     } else {
       console.log('Verified database tables already exist.');
@@ -253,7 +270,9 @@ async function initDB() {
 
       // Seed initial demo assessments if empty
       const [assessmentsCount] = await pool.query("SELECT COUNT(*) as count FROM assessments;");
-      if (assessmentsCount[0].count === 0) {
+      if (
+        SHOULD_SEED_DEMO_DATA &&
+        assessmentsCount[0].count === 0) {
         console.log("Seeding initial CodeArena Demo Assessments...");
         
         // 1. Full Stack Developer Assessment
@@ -487,7 +506,9 @@ async function initDB() {
       `);
 
       const [courseCount] = await pool.query("SELECT COUNT(*) as count FROM courses;");
-      if (courseCount[0].count === 0) {
+      if (
+        SHOULD_SEED_DEMO_DATA &&
+        courseCount[0].count === 0) {
         console.log("Seeding 5 initial CodeArena sample courses...");
 
         const sampleCourses = [
@@ -1200,7 +1221,9 @@ async function initDB() {
       const [firstProb] = await pool.query("SELECT starter_code FROM problems LIMIT 1;");
       const hasOldSolution = firstProb.length > 0 && firstProb[0].starter_code && JSON.stringify(firstProb[0].starter_code).includes("const map = new Map();");
 
-      if (problemsCheck[0].count < 20 || hasOldSolution) {
+      if (
+        SHOULD_SEED_DEMO_DATA &&
+        (problemsCheck[0].count < 20 || hasOldSolution) ){
         console.log('Seeding/Updating challenges bank to essential problems with clean starter code & expanded test cases...');
         await pool.query("SET FOREIGN_KEY_CHECKS = 0;");
         await pool.query("TRUNCATE TABLE problems;");
@@ -1219,7 +1242,9 @@ async function initDB() {
 
     // 4. Ensure default Demo accounts are seeded
     const [users] = await pool.query('SELECT * FROM users LIMIT 2');
-    if (users.length === 0) {
+    if (
+      SHOULD_SEED_DEMO_DATA &&
+      users.length === 0) {
       console.log('Seeding default demo users (admin and standard user)...');
       
       const salt = await bcrypt.genSalt(10);
@@ -1243,7 +1268,9 @@ async function initDB() {
     // Seed initial demo contests if fewer than 5 contests exist
     try {
       const [contestCheck] = await pool.query("SELECT COUNT(*) as count FROM contests;");
-      if (contestCheck[0].count < 5) {
+      if (
+        SHOULD_SEED_DEMO_DATA &&
+        contestCheck[0].count < 5) {
         console.log('Seeding initial CodeArena Contests (including Organization contests)...');
         const [adminUser] = await pool.query("SELECT id FROM users WHERE role = 'admin' LIMIT 1;");
         const adminId = adminUser.length > 0 ? adminUser[0].id : 1;
@@ -1401,9 +1428,9 @@ async function initDB() {
     }
 
   } catch (error) {
-    console.error('CRITICAL DATABASE ERROR during initialization:', error.message);
-    console.error('Please make sure MySQL is running and your .env credentials are correct.');
-  }
+  console.error('CRITICAL DATABASE ERROR during initialization:', error.message);
+  throw error;
+}
 }
 
 // Accessor for the pool
