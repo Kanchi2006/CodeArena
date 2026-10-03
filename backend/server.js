@@ -42,7 +42,11 @@ const orgDocUpload = multer({
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_codearena_jwt_key_12345';
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+  throw new Error('JWT_SECRET is required');
+}
 
 // Configured CORS Origins
 const allowedOrigins = [
@@ -54,12 +58,17 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow non-browser requests or matched origins
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(null, true); // Fallback allow to avoid breaking dynamic previews while supporting credentials
+    // Allow requests without an Origin header
+    // (e.g. server-to-server, Postman, health checks)
+    if (!origin) {
+      return callback(null, true);
     }
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error('CORS origin not allowed'));
   },
   credentials: true
 }));
@@ -8586,7 +8595,7 @@ app.post('/api/assessments/:id/rules', authenticateToken, authorizeAdminOrVerifi
 });
 
 db.initDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`CodeArena backend service running on http://localhost:${PORT}`);
+  app.listen(PORT,'0.0.0.0', () => {
+    console.log(`CodeArena backend service running on ${PORT}`);
   });
 });
